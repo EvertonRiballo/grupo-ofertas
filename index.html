@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grupo de Ofertas — Entre agora</title>
+
+<!-- ============================================================
+     CONFIGURE AQUI  (3 linhas, só isso)
+     ============================================================ -->
+<script>
+const CONFIG = {
+  PIXEL_ID:    "1589772059487705",                         // pixel-grupos-shopee (ja preenchido)
+  LINK_GRUPO:  "https://chat.whatsapp.com/DSPwJpqJ1ZVKyE0HyBiHs9",
+  LINK_CANAL:  "https://whatsapp.com/channel/0029VbCuNkf6BIEmeTMJOX35",
+  NOME_GRUPO:  "MinhaThatá Achadinhos",
+  SUBTITULO:   "Ofertas conferidas uma a uma. Sem spam, sem lixo.",
+  LOGO:        "logo.png",                                 // arquivo na MESMA pasta do index.html
+  DELAY_MS:    3000                                        // igual ao do vídeo: pixel registra antes do redirect
+};
+</script>
+
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', CONFIG.PIXEL_ID);
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1589772059487705&ev=PageView&noscript=1"/></noscript>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+     background:#0d1117;color:#e6edf3;min-height:100vh;display:flex;
+     align-items:center;justify-content:center;padding:20px;line-height:1.5}
+.card{background:#161b22;border:1px solid #30363d;border-radius:16px;
+      max-width:420px;width:100%;padding:32px 24px;text-align:center}
+.logo{width:112px;height:112px;border-radius:50%;margin:0 auto 20px;display:block;
+      object-fit:cover;border:3px solid #25D366;box-shadow:0 0 0 4px rgba(37,211,102,.15)}
+h1{font-size:24px;font-weight:700;margin-bottom:8px;line-height:1.25}
+.sub{color:#8b949e;font-size:15px;margin-bottom:24px}
+ul{list-style:none;text-align:left;margin-bottom:24px}
+li{padding:9px 0;font-size:15px;display:flex;gap:10px;align-items:flex-start}
+li span{color:#25D366;flex-shrink:0;font-weight:700}
+.btn{display:block;width:100%;padding:16px;border:none;border-radius:12px;
+     font-size:17px;font-weight:700;cursor:pointer;text-decoration:none;
+     transition:transform .12s,opacity .12s}
+.btn:active{transform:scale(.98)}
+.btn-1{background:#25D366;color:#062b16;margin-bottom:12px}
+.btn-2{background:transparent;color:#e6edf3;border:1px solid #30363d;font-size:15px}
+.btn[disabled]{opacity:.65;cursor:wait}
+.aviso{margin-top:22px;font-size:11.5px;color:#6e7681;line-height:1.55}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.25);
+      border-top-color:#062b16;border-radius:50%;animation:r .7s linear infinite;
+      vertical-align:-2px;margin-right:7px}
+@keyframes r{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="card">
+  <img class="logo" id="logo" alt="">
+  <h1 id="titulo"></h1>
+  <p class="sub" id="subtitulo"></p>
+
+  <ul>
+    <li><span>✓</span> Ofertas selecionadas à mão, não robô copiando tudo</li>
+    <li><span>✓</span> Comparo com o histórico de preço antes de postar</li>
+    <li><span>✓</span> Cupons ativos do dia</li>
+    <li><span>✓</span> Você sai quando quiser, sem burocracia</li>
+  </ul>
+
+  <button class="btn btn-1" id="btnGrupo">Entrar no grupo agora</button>
+  <a class="btn btn-2" id="btnCanal" style="display:none">Prefiro só receber avisos (canal)</a>
+
+  <p class="aviso">
+    Grupo gratuito. Os links postados são de afiliado — se você comprar por eles,
+    recebo uma comissão da loja <b>sem nenhum custo a mais para você</b>.
+    Não pedimos dados pessoais nem pagamento.
+  </p>
+</div>
+
+<script>
+document.getElementById('titulo').textContent    = CONFIG.NOME_GRUPO;
+document.getElementById('subtitulo').textContent = CONFIG.SUBTITULO;
+const elLogo = document.getElementById('logo');
+elLogo.src = CONFIG.LOGO;
+elLogo.alt = CONFIG.NOME_GRUPO;
+elLogo.onerror = () => { elLogo.style.display = 'none'; };  // se a imagem faltar, esconde em vez de quebrar
+
+// -------- utm / sub_id: carrega os parâmetros do anúncio adiante --------
+const qs = new URLSearchParams(location.search);
+const subId = qs.get('sub_id') || qs.get('utm_content') || 'organico';
+
+function irPara(url, evento, btn) {
+  const txtOriginal = btn.innerHTML;
+  btn.innerHTML = '<span class="spin"></span>Abrindo o WhatsApp...';
+  btn.disabled = true;
+
+  // dispara o evento no pixel ANTES do redirect
+  fbq('track', evento, { content_name: CONFIG.NOME_GRUPO, source: subId });
+
+  // registra no seu próprio backend (n8n webhook) — opcional
+  if (window.WEBHOOK_N8N) {
+    navigator.sendBeacon(window.WEBHOOK_N8N, JSON.stringify({
+      evento, sub_id: subId, ts: Date.now(), ua: navigator.userAgent
+    }));
+  }
+
+  setTimeout(() => { location.href = url; }, CONFIG.DELAY_MS);
+}
+
+document.getElementById('btnGrupo').addEventListener('click', function () {
+  irPara(CONFIG.LINK_GRUPO, 'Lead', this);
+});
+
+if (CONFIG.LINK_CANAL) {
+  const c = document.getElementById('btnCanal');
+  c.style.display = 'block';
+  c.addEventListener('click', function (e) {
+    e.preventDefault();
+    irPara(CONFIG.LINK_CANAL, 'Subscribe', this);
+  });
+}
+</script>
+</body>
+</html>
